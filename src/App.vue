@@ -9,8 +9,7 @@
 
   <Header />
   <TabBar />
-  <DashBody />
+  <router-view />
   <Footer />
-
 
 </template>

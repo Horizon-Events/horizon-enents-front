@@ -1,5 +1,6 @@
 <script setup>
 import event from '../assets/event.png'
+import convert from '../assets/convert.png'
 </script>
 
 <template>
@@ -13,7 +14,7 @@ import event from '../assets/event.png'
           <div class="md:col-span-2">
             <div class="relative">
               <img
-                :src="event"
+                :src="convert"
                 alt="Event"
                 class="w-full h-56 object-cover rounded"
               />
