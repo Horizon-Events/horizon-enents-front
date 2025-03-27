@@ -35,7 +35,12 @@ const route = useRoute()
         </router-link>
       </div>
 
-      <div class="text-sm text-gray-600">Ranko ⏷</div>
+      <router-link
+        to="/login"
+        class="bg-sky-300 hover:bg-sky-400 text-white text-sm px-9 py-1.5 rounded shadow transition"
+      >
+        Login
+      </router-link>
     </div>
   </nav>
 </template>

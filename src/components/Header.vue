@@ -5,7 +5,7 @@
 </script>
 
 <template>
-  <div class="w-full h-[40px] bg-[#501e14] flex items-center justify-end pr-4">
+  <div class="w-full h-[40px] bg-[#221700] flex items-center justify-end pr-4">
     <p class="text-white text-sm">Host login</p>
   </div>
 
@@ -27,9 +27,13 @@
 
         <div class="flex flex-col gap-2">
           <div class="bg-[#2e2e2e] text-white text-sm px-13 py-2 rounded shadow">23 Active Events</div>
-          <button class="bg-green-500 text-white text-sm px-13 py-2 rounded shadow hover:bg-green-600">
+          <router-link
+            to="/register"
+            class="bg-green-500 text-white text-sm px-6 py-2 rounded shadow hover:bg-green-600 text-center"
+          >
             Register now!
-          </button>
+        </router-link>
+
         </div>
       </div>
     </div>
