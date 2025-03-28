@@ -8,7 +8,7 @@ const route = useRoute()
       <div class="max-w-screen-xl mx-auto h-full flex items-center justify-between px-4">
         <div class="flex space-x-8">
           <router-link
-            to="/horizon-enents-front/"
+            to="/horizon-enents-front"
             :class="['text-sm font-medium pb-2',
               route.path === '/horizon-enents-front/' ? 'text-blue-500 border-b-2 border-blue-500' : 'text-gray-700 hover:text-blue-500'
             ]"
@@ -17,7 +17,7 @@ const route = useRoute()
           </router-link>
 
           <router-link
-            to="/events"
+            to="/horizon-enents-front/events"
             :class="['text-sm font-medium pb-2',
               route.path === '/events' ? 'text-blue-500 border-b-2 border-blue-500' : 'text-gray-700 hover:text-blue-500'
             ]"
@@ -26,7 +26,7 @@ const route = useRoute()
           </router-link>
 
           <router-link
-            to="/help"
+            to="/horizon-enents-front/help"
             :class="['text-sm font-medium pb-2',
               route.path === '/help' ? 'text-blue-500 border-b-2 border-blue-500' : 'text-gray-700 hover:text-blue-500'
             ]"
@@ -36,7 +36,7 @@ const route = useRoute()
         </div>
 
         <router-link
-          to="/login"
+          to="/horizon-enents-front/login"
           class="bg-sky-300 hover:bg-sky-400 text-white text-sm px-9 py-1.5 rounded shadow transition"
         >
           Login

@@ -8,16 +8,16 @@ import HostLogin from '../components/HostLogin.vue'
 
 const routes = [
   { path: '/horizon-enents-front/', component: HomePage },
-  { path: '/events', component: EventsPage },
-  { path: '/register', component: RegisterPage },
-  { path: '/login', component: LoginPage },
+  { path: '/horizon-enents-front/events', component: EventsPage },
+  { path: '/horizon-enents-front/register', component: RegisterPage },
+  { path: '/horizon-enents-front/login', component: LoginPage },
   {
-    path: '/events/:id',
+    path: '/horizon-enents-front/events/:id',
     name: 'EventDetail',
     component: EventDetail,
     props: true
   },
-  { path: '/host-login', component: HostLogin }
+  { path: '/horizon-enents-front/host-login', component: HostLogin }
 ]
 
 const router = createRouter({

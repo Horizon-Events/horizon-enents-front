@@ -89,7 +89,7 @@ const events = [
         <router-link
             v-for="(event, i) in events"
             :key="i"
-            :to="`/events/${event.id}`"
+            :to="`/horizon-enents-front/events/${event.id}`"
             class="relative group bg-white rounded shadow overflow-hidden cursor-pointer block"
             >
             <div class="relative">
