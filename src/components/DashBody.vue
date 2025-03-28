@@ -42,25 +42,30 @@ import convert from '../assets/convert.png'
             </div>
 
   
-              <div v-for="n in 3" :key="n" class="bg-white mb-6 shadow rounded overflow-hidden">
-                <div class="relative">
-                  <img :src="event" alt="Event Banner" class="w-full h-32 object-cover" />
-                  <div class="absolute top-2 left-2 bg-white p-2 rounded shadow">
-                    <span class="text-xl">🎉</span>
-                  </div>
-                </div>
-  
-                <div class="p-4">
-                  <h4 class="text-blue-500 font-semibold text-md cursor-pointer hover:underline">
-                    Illawarra Sunset Soiree #{{ n + 211 }}
-                  </h4>
-                  <p class="text-sm text-gray-600 mt-1">Join us watching the sunset</p>
-                  <div class="flex justify-between items-center text-xs text-gray-500 mt-4">
-                    <span>Wollongong Council</span>
-                    <span>2 days ago</span>
-                  </div>
+            <router-link
+              v-for="n in 3"
+              :key="n"
+              :to="`/events/${n}`"
+              class="bg-white mb-6 shadow rounded overflow-hidden block hover:shadow-md transition"
+            >
+              <div class="relative">
+                <img :src="event" alt="Event Banner" class="w-full h-32 object-cover" />
+                <div class="absolute top-2 left-2 bg-white p-2 rounded shadow">
+                  <span class="text-xl">🎉</span>
                 </div>
               </div>
+
+              <div class="p-4">
+                <h4 class="text-blue-500 font-semibold text-md">
+                  Illawarra Sunset Soiree #{{ n + 211 }}
+                </h4>
+                <p class="text-sm text-gray-600 mt-1">Join us watching the sunset</p>
+                <div class="flex justify-between items-center text-xs text-gray-500 mt-4">
+                  <span>Wollongong Council</span>
+                  <span>2 days ago</span>
+                </div>
+              </div>
+            </router-link>
             </div>
           </div>
   

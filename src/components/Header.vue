@@ -6,7 +6,12 @@
 
 <template>
   <div class="w-full h-[40px] bg-[#221700] flex items-center justify-end pr-4">
-    <p class="text-white text-sm">Host login</p>
+    <router-link
+      to="/host-login"
+      class="text-white text-sm hover:underline cursor-pointer"
+    >
+      ➲ Host login
+    </router-link>
   </div>
 
   <div class="relative overflow-hidden h-[150px]">
@@ -32,7 +37,7 @@
             class="bg-green-500 text-white text-sm px-6 py-2 rounded shadow hover:bg-green-600 text-center"
           >
             Register now!
-        </router-link>
+          </router-link>
 
         </div>
       </div>

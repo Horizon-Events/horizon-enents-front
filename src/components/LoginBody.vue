@@ -1,4 +1,5 @@
 <script setup>
+import { ref } from 'vue'
 import events from '../assets/event.png'
 import appAd1 from '../assets/journeyAD.png'
 
@@ -8,6 +9,7 @@ const recentEvents = Array(5).fill({
   org: 'Wollongong Council',
   date: '2 days ago'
 })
+
 </script>
 
 <template>
@@ -39,36 +41,25 @@ const recentEvents = Array(5).fill({
             Login to Event Horizons
           </h2>
 
-          <form @submit.prevent class="space-y-4">
+          <form @submit.prevent="submitForm" class="space-y-4">
             <input
+              v-model="username"
               type="text"
               placeholder="Username"
-              class="w-full border border-gray-300 px-3 py-2 rounded focus:outline-blue-400"
+              class="w-full border border-gray-300 px-3 py-2 rounded"
             />
             <input
+              v-model="password"
               type="password"
               placeholder="Password"
-              class="w-full border border-gray-300 px-3 py-2 rounded focus:outline-blue-400"
+              class="w-full border border-gray-300 px-3 py-2 rounded"
             />
-
-            <div class="mt-2 flex items-center">
-              <input type="checkbox" id="robot" class="mr-2" />
-              <label for="robot" class="text-sm text-gray-600">I'm not a robot</label>
-              <img
-                src="https://www.gstatic.com/recaptcha/api2/logo_48.png"
-                alt="reCAPTCHA"
-                class="h-6 ml-auto"
-              />
-            </div>
 
             <a href="#" class="text-sm text-blue-400 hover:underline block">
               Forgot your password?
             </a>
 
-            <button
-              type="submit"
-              class="w-full bg-sky-300 hover:bg-sky-400 text-white font-medium py-2 rounded mt-2"
-            >
+            <button type="submit" class="w-full bg-sky-400 text-white py-2 rounded">
               Login
             </button>
           </form>
