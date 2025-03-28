@@ -7,7 +7,7 @@ import EventDetail from '../components/EventDetail.vue'
 import HostLogin from '../components/HostLogin.vue'
 
 const routes = [
-  { path: '/', component: HomePage },
+  { path: '/horizon-enents-front/', component: HomePage },
   { path: '/events', component: EventsPage },
   { path: '/register', component: RegisterPage },
   { path: '/login', component: LoginPage },

@@ -8,9 +8,9 @@ const route = useRoute()
       <div class="max-w-screen-xl mx-auto h-full flex items-center justify-between px-4">
         <div class="flex space-x-8">
           <router-link
-            to="/"
+            to="/horizon-enents-front/"
             :class="['text-sm font-medium pb-2',
-              route.path === '/' ? 'text-blue-500 border-b-2 border-blue-500' : 'text-gray-700 hover:text-blue-500'
+              route.path === '/horizon-enents-front/' ? 'text-blue-500 border-b-2 border-blue-500' : 'text-gray-700 hover:text-blue-500'
             ]"
           >
             HOMEPAGE

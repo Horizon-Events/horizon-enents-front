@@ -1,9 +1,12 @@
 {
   "name": "horizon-enents-front",
   "private": true,
+  "homepage": "https://rankopolat.github.io/horizon-enents-front/",
   "version": "0.0.0",
   "type": "module",
   "scripts": {
+    "predeploy": "npm run build",
+    "deploy": "gh-pages -d dist",
     "dev": "vite",
     "build": "vite build",
     "preview": "vite preview"
