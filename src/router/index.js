@@ -5,6 +5,7 @@ import RegisterPage from '../components/RegisterBody.vue'
 import LoginPage from '../components/LoginBody.vue'
 import EventDetail from '../components/EventDetail.vue'
 import HostLogin from '../components/HostLogin.vue'
+import HostSign from '../components/HostSign.vue'
 
 const routes = [
   { path: '/horizon-enents-front/', component: HomePage },
@@ -17,7 +18,8 @@ const routes = [
     component: EventDetail,
     props: true
   },
-  { path: '/horizon-enents-front/host-login', component: HostLogin }
+  { path: '/horizon-enents-front/host-login', component: HostLogin },
+  { path: '/horizon-enents-front/host-signup', component: HostSign }
 ]
 
 const router = createRouter({

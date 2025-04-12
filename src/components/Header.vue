@@ -2,6 +2,7 @@
   import clouds from '../assets/clouds.png'
   import sunset from '../assets/sunset.png'
   import event from '../assets/logo.png'
+  import blue from '../assets/bluey.png'
 </script>
 
 <template>

@@ -45,13 +45,12 @@ import convert from '../assets/convert.png'
             <router-link
               v-for="n in 3"
               :key="n"
-              :to="`/events/${n}`"
+              :to="`/horizon-enents-front/events/${n}`"
               class="bg-white mb-6 shadow rounded overflow-hidden block hover:shadow-md transition"
             >
               <div class="relative">
                 <img :src="event" alt="Event Banner" class="w-full h-32 object-cover" />
                 <div class="absolute top-2 left-2 bg-white p-2 rounded shadow">
-                  <span class="text-xl">🎉</span>
                 </div>
               </div>
 
