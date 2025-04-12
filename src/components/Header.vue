@@ -3,12 +3,18 @@
   import sunset from '../assets/sunset.png'
   import event from '../assets/logo.png'
   import blue from '../assets/bluey.png'
+
+  import { useAuthStore } from '@/stores/auth'
+
+  const authStore = useAuthStore()
+
 </script>
 
 <template>
   <div class="w-full h-[40px] bg-[#221700] flex items-center justify-end pr-4">
     <router-link
-      to="/horizon-enents-front/host-login"
+      v-if="!authStore.user"
+      to="/host-login"
       class="text-white text-sm hover:underline cursor-pointer"
     >
       ➲ Host login
@@ -34,7 +40,8 @@
         <div class="flex flex-col gap-2">
           <div class="bg-[#2e2e2e] text-white text-sm px-13 py-2 rounded shadow">23 Active Events</div>
           <router-link
-            to="/horizon-enents-front/register"
+            v-if="!authStore.user"
+            to="/register"
             class="bg-green-500 text-white text-sm px-6 py-2 rounded shadow hover:bg-green-600 text-center"
           >
             Register now!

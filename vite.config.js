@@ -8,7 +8,7 @@ export default defineConfig({
     tailwindcss(),
     vue()]
   ,
-  base: '/horizon-enents-front/',
+  base: '/',
   resolve: {
     alias: {
       '@': path.resolve(__dirname, './src'),

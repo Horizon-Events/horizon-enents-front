@@ -1,6 +1,60 @@
 <script setup>
+
+import { db } from '../firebase' 
+import { doc, setDoc } from 'firebase/firestore'
+
+import { ref } from 'vue'
+import { auth } from '../firebase'
+import {
+  createUserWithEmailAndPassword,
+  GoogleAuthProvider,
+  signInWithPopup,
+} from 'firebase/auth'
+
 import banner from '../assets/registerIMG.png'
 import appAd1 from '../assets/journeyAD.png'
+
+const provider = new GoogleAuthProvider()
+
+const username = ref('')
+const email = ref('')
+const password = ref('')
+const confirmPassword = ref('')
+const message = ref('')
+
+const signInWithGoogle = async () => {
+  try {
+    const result = await signInWithPopup(auth, provider)
+    message.value = `Signed in as ${result.user.displayName || result.user.email}`
+  } catch (err) {
+    message.value = err.message
+  }
+}
+
+const registerUser = async () => {
+  message.value = ''
+  if (password.value !== confirmPassword.value) {
+    message.value = 'Passwords do not match'
+    return
+  }
+
+  try {
+    const result = await createUserWithEmailAndPassword(auth, email.value, password.value)
+    const user = result.user
+
+    await setDoc(doc(db, "users", user.uid), {
+      uid: user.uid,
+      email: user.email,
+      displayName: username.value || user.displayName || '',
+      role: "user",
+      createdAt: new Date()
+    })
+
+    message.value = `Successfully registered as ${result.user.email}`
+  } catch (error) {
+    message.value = error.message
+  }
+}
 </script>
 
 <template>
@@ -15,34 +69,31 @@ import appAd1 from '../assets/journeyAD.png'
         <div class="bg-white rounded shadow p-6">
           <h2 class="text-lg font-semibold bg-gray-100 px-4 py-2 rounded mb-4">Register to Event Horizons</h2>
 
-          <form @submit.prevent class="space-y-4">
+          <form @submit.prevent="registerUser" class="space-y-4">
             <input
+              v-model="username"
               type="text"
               placeholder="Username"
               class="w-full border border-gray-300 px-3 py-2 rounded focus:outline-blue-400"
             />
             <input
+              v-model="email"
               type="email"
               placeholder="Email"
               class="w-full border border-gray-300 px-3 py-2 rounded focus:outline-blue-400"
             />
             <input
+              v-model="password"
               type="password"
               placeholder="Password"
               class="w-full border border-gray-300 px-3 py-2 rounded focus:outline-blue-400"
             />
             <input
+              v-model="confirmPassword"
               type="password"
               placeholder="Confirm Password"
               class="w-full border border-gray-300 px-3 py-2 rounded focus:outline-blue-400"
             />
-
-            <div class="mt-4 flex justify-center">
-              <div class="bg-white border rounded shadow px-4 py-2 text-sm text-gray-500">
-                <input type="checkbox" id="robot" class="mr-2" />
-                I'm not a robot
-              </div>
-            </div>
 
             <button
               type="submit"
@@ -51,6 +102,18 @@ import appAd1 from '../assets/journeyAD.png'
               Join now
             </button>
           </form>
+
+          <div class="mt-6 flex justify-center">
+            <button
+              @click="signInWithGoogle"
+              class="flex items-center gap-2 bg-white border border-gray-300 text-gray-700 px-4 py-2 rounded shadow hover:bg-gray-50"
+            >
+              <i class="fab fa-google"></i>
+              Continue with Google
+            </button>
+          </div>
+
+          <p class="text-sm text-red-500 mt-4 text-center">{{ message }}</p>
         </div>
       </div>
 

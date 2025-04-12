@@ -8,7 +8,7 @@ const route = useRoute()
 </script>
 
 <template>
-  <div v-if="route.path !== '/horizon-enents-front/host-login' && route.path !== '/horizon-enents-front/host-signup'">
+  <div v-if="route.path !== '/host-login' && route.path !== '/host-signup'">
     <Header />
     <TabBar />
     <router-view />

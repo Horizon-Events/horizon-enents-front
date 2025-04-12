@@ -1,13 +1,57 @@
 <script setup>
 import logo from '../assets/logo.png'
 import starburst from '../assets/starburst.png'
+
+import { ref } from 'vue'
+import { useRouter } from 'vue-router'
+import { signInWithEmailAndPassword } from 'firebase/auth'
+import { hostAuth, hostFirestore } from '../hostfirebase'
+import { doc, getDoc } from 'firebase/firestore'
+import { useAuthStore } from '../stores/auth' 
+
+const authStore = useAuthStore()
+const email = ref('')
+const password = ref('')
+const message = ref('')
+const router = useRouter()
+
+const loginHost = async () => {
+  message.value = ''
+  try {
+    const result = await signInWithEmailAndPassword(hostAuth, email.value, password.value)
+    const user = result.user
+
+    const docRef = doc(hostFirestore, 'hosts', user.uid)
+    const docSnap = await getDoc(docRef)
+    const userData = docSnap.exists() ? docSnap.data() : {}
+
+    authStore.setUser({
+      email: user.email,
+      uid: user.uid,
+      displayName: user.displayName,
+      photoURL: user.photoURL,
+      role: userData.role || 'default'
+    })
+
+    if (docSnap.exists() && docSnap.data().role === 'host') {
+      message.value = `Welcome, ${user.email}`
+      router.push('/host-dashboard') 
+    } else {
+      message.value = 'Access denied. This account is not a host.'
+    }
+
+  } catch (error) {
+    message.value = error.message
+  }
+}
+
 </script>
 
 <template>
   <div class="min-h-screen flex items-center justify-center bg-[#fffff] px-4">
 
     <router-link
-      to="/horizon-enents-front"
+      to="/"
       class="absolute top-4 left-4 text-gray-700 bg-white px-4 py-2 rounded shadow hover:bg-gray-100 transition"
     >
       ← Back
@@ -33,11 +77,12 @@ import starburst from '../assets/starburst.png'
             Today is a new day. It's your day. You shape it. Sign in to start managing your events.
           </p>
 
-          <form @submit.prevent class="space-y-4">
+          <form @submit.prevent="loginHost" class="space-y-4">
             <div>
               <label for="email" class="block text-sm text-gray-600 mb-1">Email</label>
               <input
                 id="email"
+                v-model="email"
                 type="email"
                 placeholder="Example@email.com"
                 class="w-full px-4 py-2 border border-gray-300 rounded focus:outline-blue-400"
@@ -48,6 +93,7 @@ import starburst from '../assets/starburst.png'
               <label for="password" class="block text-sm text-gray-600 mb-1">Password</label>
               <input
                 id="password"
+                v-model="password"
                 type="password"
                 placeholder="At least 8 characters"
                 class="w-full px-4 py-2 border border-gray-300 rounded focus:outline-blue-400"
@@ -62,9 +108,12 @@ import starburst from '../assets/starburst.png'
             </button>
           </form>
 
+          <p class="text-sm text-red-500 mt-3 text-center">{{ message }}</p>
+
+
           <p class="text-sm text-center text-gray-500 mt-6">
             Don’t you have an account?
-            <router-link to="/horizon-enents-front/host-signup" class="text-blue-500 hover:underline">Sign up</router-link>
+            <router-link to="/host-signup" class="text-blue-500 hover:underline">Sign up</router-link>
           </p>
         </div>
       </div>

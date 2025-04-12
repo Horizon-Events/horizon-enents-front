@@ -3,14 +3,74 @@ import { ref } from 'vue'
 import events from '../assets/event.png'
 import appAd1 from '../assets/journeyAD.png'
 
+import { db } from '../firebase'
+import { doc, getDoc } from 'firebase/firestore'
+import { auth } from '../firebase'
+import { signInWithEmailAndPassword, signInWithPopup, GoogleAuthProvider } from 'firebase/auth'
+import { useAuthStore } from '../stores/auth' 
+import { useRouter } from 'vue-router'
+
+const router = useRouter()
+const authStore = useAuthStore()
+
+const email = ref('')
+const password = ref('')
+const message = ref('')
+const provider = new GoogleAuthProvider()
+
+const submitForm = async () => {
+  message.value = ''
+  try {
+    const userCredential = await signInWithEmailAndPassword(auth, email.value, password.value)
+    const user = userCredential.user
+
+    const docRef = doc(db, 'users', user.uid)
+    const docSnap = await getDoc(docRef)
+    const userData = docSnap.exists() ? docSnap.data() : {}
+
+    authStore.setUser({
+      email: user.email,
+      uid: user.uid,
+      displayName: user.displayName,
+      photoURL: user.photoURL,
+      role: userData.role || 'default'
+    })
+
+    message.value = `Welcome back, ${user.email}`
+    router.push('/')
+  } catch (error) {
+    message.value = error.message
+  }
+}
+
+const signInWithGoogle = async () => {
+  message.value = ''
+  try {
+    const result = await signInWithPopup(auth, provider)
+    const user = result.user
+
+    authStore.setUser({
+      email: user.email,
+      uid: user.uid,
+      displayName: user.displayName,
+      photoURL: user.photoURL
+    })
+
+    message.value = `Signed in as ${user.displayName || user.email}`
+    router.push('/')
+  } catch (error) {
+    message.value = error.message
+  }
+}
+
 const recentEvents = Array(5).fill({
   title: 'Illawarra Sunset Soiree #212',
   description: 'Join us watching the sunset',
   org: 'Wollongong Council',
   date: '2 days ago'
 })
-
 </script>
+
 
 <template>
   <div class="bg-gray-100 py-6 px-4">
@@ -43,16 +103,18 @@ const recentEvents = Array(5).fill({
 
           <form @submit.prevent="submitForm" class="space-y-4">
             <input
-              v-model="username"
-              type="text"
-              placeholder="Username"
+              v-model="email"
+              type="email"
+              placeholder="Email"
               class="w-full border border-gray-300 px-3 py-2 rounded"
+              required
             />
             <input
               v-model="password"
               type="password"
               placeholder="Password"
               class="w-full border border-gray-300 px-3 py-2 rounded"
+              required
             />
 
             <a href="#" class="text-sm text-blue-400 hover:underline block">
@@ -63,6 +125,18 @@ const recentEvents = Array(5).fill({
               Login
             </button>
           </form>
+
+          <div class="mt-6 flex justify-center">
+            <button
+              @click="signInWithGoogle"
+              class="flex items-center gap-2 bg-white border border-gray-300 text-gray-700 px-4 py-2 rounded shadow hover:bg-gray-50"
+            >
+              <i class="fab fa-google"></i>
+              Continue with Google
+            </button>
+          </div>
+
+          <p class="text-sm text-red-500 mt-4 text-center">{{ message }}</p>
         </div>
       </div>
 
