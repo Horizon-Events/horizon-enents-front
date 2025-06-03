@@ -26,11 +26,14 @@ const account = () => {
 }
 
 const goHome = () => {
+  
   const user = authStore.user
-console.log("hi")
-  if (user?.role === 'host') {
+  if (user?.role === 'organizer') {
     router.push('/host-dashboard')
-  } else {
+  } else if (user?.role === 'attendee') {
+    router.push('/user-dashboard')
+  }
+  else{
     router.push('/')
   }
 }
@@ -53,9 +56,23 @@ console.log("hi")
 
 
           <router-link
+            v-if="authStore.user?.role !== 'organizer'"
             to="/events"
             :class="['text-sm font-medium pb-2', route.path === '/events' ? 'text-blue-500 border-b-2 border-blue-500' : 'text-gray-700 hover:text-blue-500']"
-          >EVENTS</router-link>
+          >
+            EVENTS
+          </router-link>
+
+        <router-link
+          v-if="authStore.user?.role === 'organizer'"
+          to="/reports"
+          :class="[
+            'text-sm font-medium pb-2',
+            route.path === '/reports' ? 'text-blue-500 border-b-2 border-blue-500' : 'text-gray-700 hover:text-blue-500'
+          ]"
+        >
+          REPORTS
+        </router-link>
 
           <router-link
             to="/help"
@@ -65,7 +82,7 @@ console.log("hi")
 
         <div v-if="authStore.user" class="relative" @click="toggleDropdown">
           <button class="flex items-center space-x-2 text-gray-600 hover:text-gray-800 cursor-pointer">
-            <span>{{ authStore.user.email || 'User' }}</span>
+            <span>{{ authStore.user.full_name || 'User' }}</span>
             <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
               <path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 10.94l3.71-3.71a.75.75 0 111.08 1.04l-4.25 4.25a.75.75 0 01-1.08 0L5.21 8.27a.75.75 0 01.02-1.06z" clip-rule="evenodd" />
             </svg>

@@ -1,12 +1,10 @@
 <script setup>
+import axios from 'axios'
 import logo from '../assets/logo.png'
 import starburst from '../assets/starburst.png'
 
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'
-import { signInWithEmailAndPassword } from 'firebase/auth'
-import { hostAuth, hostFirestore } from '../hostfirebase'
-import { doc, getDoc } from 'firebase/firestore'
 import { useAuthStore } from '../stores/auth' 
 
 const authStore = useAuthStore()
@@ -18,30 +16,26 @@ const router = useRouter()
 const loginHost = async () => {
   message.value = ''
   try {
-    const result = await signInWithEmailAndPassword(hostAuth, email.value, password.value)
-    const user = result.user
 
-    const docRef = doc(hostFirestore, 'hosts', user.uid)
-    const docSnap = await getDoc(docRef)
-    const userData = docSnap.exists() ? docSnap.data() : {}
-
-    authStore.setUser({
-      email: user.email,
-      uid: user.uid,
-      displayName: user.displayName,
-      photoURL: user.photoURL,
-      role: userData.role || 'default'
+    const response = await axios.post('http://localhost:3000/users/loginHost', {
+      email: email.value,
+      password: password.value
     })
 
-    if (docSnap.exists() && docSnap.data().role === 'host') {
-      message.value = `Welcome, ${user.email}`
-      router.push('/host-dashboard') 
-    } else {
-      message.value = 'Access denied. This account is not a host.'
-    }
+    const user = response.data.user
+
+    authStore.setUser({
+      uid: user.uid,
+      email: user.email,
+      full_name: user.full_name,
+      role: user.user_role
+    })
+
+    router.push('/host-dashboard') 
 
   } catch (error) {
-    message.value = error.message
+    message.value = error.response?.data?.message || error.message || 'Login failed'
+
   }
 }
 

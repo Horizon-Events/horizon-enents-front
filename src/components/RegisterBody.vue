@@ -1,20 +1,9 @@
 <script setup>
-
-import { db } from '../firebase' 
-import { doc, setDoc } from 'firebase/firestore'
-
+import axios from 'axios'
 import { ref } from 'vue'
-import { auth } from '../firebase'
-import {
-  createUserWithEmailAndPassword,
-  GoogleAuthProvider,
-  signInWithPopup,
-} from 'firebase/auth'
 
 import banner from '../assets/registerIMG.png'
 import appAd1 from '../assets/journeyAD.png'
-
-const provider = new GoogleAuthProvider()
 
 const username = ref('')
 const email = ref('')
@@ -22,40 +11,29 @@ const password = ref('')
 const confirmPassword = ref('')
 const message = ref('')
 
-const signInWithGoogle = async () => {
-  try {
-    const result = await signInWithPopup(auth, provider)
-    message.value = `Signed in as ${result.user.displayName || result.user.email}`
-  } catch (err) {
-    message.value = err.message
-  }
-}
-
 const registerUser = async () => {
   message.value = ''
+
   if (password.value !== confirmPassword.value) {
     message.value = 'Passwords do not match'
     return
   }
 
   try {
-    const result = await createUserWithEmailAndPassword(auth, email.value, password.value)
-    const user = result.user
-
-    await setDoc(doc(db, "users", user.uid), {
-      uid: user.uid,
-      email: user.email,
-      displayName: username.value || user.displayName || '',
-      role: "user",
-      createdAt: new Date()
+    await axios.post('http://localhost:3000/users', {
+      email: email.value,
+      full_name: username.value,
+      password: password.value,
+      role: 'attendee',
     })
 
-    message.value = `Successfully registered as ${result.user.email}`
+    message.value = `Successfully registered as ${username.value}`
   } catch (error) {
-    message.value = error.message
+    message.value = error.response?.data?.error || error.message
   }
 }
 </script>
+
 
 <template>
   <div class="bg-gray-100 py-6 px-4">
@@ -102,16 +80,6 @@ const registerUser = async () => {
               Join now
             </button>
           </form>
-
-          <div class="mt-6 flex justify-center">
-            <button
-              @click="signInWithGoogle"
-              class="flex items-center gap-2 bg-white border border-gray-300 text-gray-700 px-4 py-2 rounded shadow hover:bg-gray-50"
-            >
-              <i class="fab fa-google"></i>
-              Continue with Google
-            </button>
-          </div>
 
           <p class="text-sm text-red-500 mt-4 text-center">{{ message }}</p>
         </div>

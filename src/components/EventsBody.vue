@@ -1,71 +1,54 @@
 <script setup>
-import eventImg from '../assets/event.png'
+import { ref, onMounted, computed } from 'vue'
+import axios from 'axios'
+import EventCard from '../components/EventComp.vue'
 
-const events = [
-  {
-    title: 'Illawarra Sunset Soiree',
-    status: 'green',
-    description: 'A magical evening under the lanterns with live music and food.',
-    id: 1
-  },
-  {
-    title: 'Illawarra Sunset Soiree',
-    status: 'green',
-    description: 'Join us for a coastal sunset celebration with a vibrant crowd.',
-    id: 2
-  },
-  {
-    title: 'Illawarra Sunset Soiree',
-    status: 'green',
-    description: 'Celebrate the sunset with performances and outdoor dining.',
-    id: 3
-  },
-  {
-    title: 'Illawarra Sunset Soiree',
-    status: 'yellow',
-    description: 'Limited seats available. Book soon for the twilight vibes.',
-    id: 4
-  },
-  {
-    title: 'Illawarra Sunset Soiree',
-    status: 'yellow',
-    description: 'Get ready for sunset photography, music and good company.',
-    id: 5
-  },
-  {
-    title: 'Illawarra Sunset Soiree',
-    status: 'green',
-    description: 'Sunset festival featuring lights, dancing, and local food trucks.',
-    id: 6
-  },
-  {
-    title: 'Illawarra Sunset Soiree',
-    status: 'red',
-    description: 'This event is currently sold out, stay tuned for next one.',
-    id: 7
-  },
-  {
-    title: 'Illawarra Sunset Soiree',
-    status: 'red',
-    description: 'Fully booked. You can register for waitlist or future updates.',
-    id: 8
-  },
-  {
-    title: 'Illawarra Sunset Soiree',
-    status: 'yellow',
-    description: 'A twilight market and music event at the bay.',
-    id: 9
+const events = ref([])
+const error = ref('')
+
+const search = ref('')
+const selectedCategory = ref('All')
+const selectedDate = ref('All')
+
+const fetchEvents = async () => {
+  try {
+    const response = await axios.get('http://localhost:3000/events')
+    events.value = response.data.events
+  } catch (err) {
+    console.error('Failed to fetch events:', err)
+    error.value = 'Could not load events.'
   }
-]
+}
+
+onMounted(fetchEvents)
+
+const filteredEvents = computed(() => {
+  return events.value.filter(event => {
+    const matchesSearch = event.name.toLowerCase().includes(search.value.toLowerCase())
+    const matchesCategory =
+      selectedCategory.value === 'All' || event.category === selectedCategory.value
+    const matchesDate =
+      selectedDate.value === 'All' ||
+      new Date(event.start_date).toDateString() === selectedDate.value
+    return matchesSearch && matchesCategory && matchesDate
+  })
+})
+
+const uniqueCategories = computed(() =>
+  Array.from(new Set(events.value.map(e => e.category)))
+)
+const uniqueDates = computed(() =>
+  Array.from(new Set(events.value.map(e => new Date(e.start_date).toDateString())))
+)
 </script>
 
 <template>
   <div class="bg-gray-100 py-6 px-4">
     <div class="max-w-screen-xl mx-auto px-4 space-y-6">
-
       <div class="bg-white p-4 rounded shadow">
         <div class="flex items-center gap-4 mb-4">
           <input
+            v-model="search"
             type="text"
             placeholder="Search here..."
             class="w-full border border-gray-300 px-4 py-2 rounded focus:outline-blue-400"
@@ -75,9 +58,31 @@ const events = [
 
         <div class="flex flex-wrap gap-4 text-sm">
           <div class="text-gray-700 font-semibold">Filters</div>
-          <button class="bg-gray-100 px-3 py-1 rounded hover:bg-gray-200">Category: All ⏷</button>
-          <button class="bg-gray-100 px-3 py-1 rounded hover:bg-gray-200">Type: All ⏷</button>
-          <button class="bg-gray-100 px-3 py-1 rounded hover:bg-gray-200">Date: All ⏷</button>
+
+          <button
+            @click="selectedCategory = 'All'"
+            :class="{ 'bg-blue-100': selectedCategory === 'All' }"
+            class="bg-gray-100 px-3 py-1 rounded hover:bg-gray-200"
+          >
+            Category: All
+          </button>
+          <button
+            v-for="category in uniqueCategories"
+            :key="category"
+            @click="selectedCategory = category"
+            :class="{ 'bg-blue-100': selectedCategory === category }"
+            class="bg-gray-100 px-3 py-1 rounded hover:bg-gray-200"
+          >
+            {{ category }}
+          </button>
+
+          <select
+            v-model="selectedDate"
+            class="bg-gray-100 px-3 py-1 rounded border border-gray-300"
+          >
+            <option>All</option>
+            <option v-for="date in uniqueDates" :key="date">{{ date }}</option>
+          </select>
         </div>
       </div>
 
@@ -85,39 +90,21 @@ const events = [
         Recent Events
       </button>
 
-      <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 ">
-        <router-link
-            v-for="(event, i) in events"
-            :key="i"
-            :to="`/horizon-enents-front/events/${event.id}`"
-            class="relative group bg-white rounded shadow overflow-hidden cursor-pointer block"
-            >
-            <div class="relative">
-                <img :src="eventImg" alt="Event Image" class="w-full h-36 object-cover" />
-                <div
-                class="absolute top-2 right-2 w-3 h-3 rounded-full"
-                :class="{
-                    'bg-green-500': event.status === 'green',
-                    'bg-yellow-400': event.status === 'yellow',
-                    'bg-red-500': event.status === 'red'
-                }"
-                ></div>
-                <div
-                class="absolute inset-0 bg-black bg-opacity-50 text-white flex items-center justify-center text-xs px-4 text-center opacity-0 group-hover:opacity-80 transition-opacity duration-300"
-                >
-                {{ event.description }}
-                </div>
-            </div>
-
-            <div class="px-4 py-2">
-                <p class="text-xs font-bold text-center border-b pb-1">EVENTS</p>
-                <h3 class="text-center text-sm font-medium mt-2">
-                {{ event.title }}
-                </h3>
-            </div>
-            </router-link>
-
+      <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
+        <EventCard
+          v-for="event in filteredEvents"
+          :key="event.id"
+          :id="event.id"
+          :name="event.name"
+          :description="event.description"
+          :category="event.category"
+          :generalPrice="event.general_price"
+          :vipPrice="event.vip_price"
+          :image="event.image"
+        />
       </div>
+
+      <p v-if="error" class="text-red-600 text-center mt-6">{{ error }}</p>
     </div>
   </div>
 </template>

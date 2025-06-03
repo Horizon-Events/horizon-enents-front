@@ -1,83 +1,100 @@
 <script setup>
-  import EventCard from './EventCard.vue'
-  import eventImg from '../assets/event.png'
-  import { useAuthStore } from '../stores/auth' 
-  const authStore = useAuthStore()
+import { ref, onMounted, computed } from 'vue'
+import EventCard from './EventCard.vue'
+import eventImg from '../assets/event.png'
+import { useAuthStore } from '../stores/auth'
+import { useRouter } from 'vue-router'
+import axios from 'axios'
 
-  const events = [
-    {
-      title: 'Illawarra Sunset Soiree',
-      price: '$50.00',
-      image: eventImg,
-    },
-    {
-      title: 'Illawarra Sunset Soiree',
-      price: '$49.00',
-      image: 'https://images.unsplash.com/photo-1507525428034-b723cf961d3e',
-    },
-    {
-      title: 'Sunset and Live Music',
-      price: '$30.00',
-      image: 'https://images.unsplash.com/photo-1507525428034-b723cf961d3e',
-    },
-    {
-      title: 'Illawarra Drinks and Games Night',
-      price: '$109.00',
-      image: 'https://images.unsplash.com/photo-1529626455594-4ff0802cfb7e',
-    },
-    {
-      title: 'Illawarra Sunset Soiree',
-      price: '$109.00',
-      image: 'https://images.unsplash.com/photo-1472653431158-6364773b2a56',
-    },
-    {
-      title: 'Illawarra Sunset Soiree',
-      price: '$109.00',
-      image: 'https://images.unsplash.com/photo-1508672019048-805c876b67e2',
+const router = useRouter()
+const authStore = useAuthStore()
+
+const events = ref([])
+const message = ref('')
+
+const goToCreateEvent = () => {
+  router.push('/create-event')
+}
+
+const fetchHostEvents = async () => {
+  try {
+    const organizerId = authStore.user?.uid
+    if (!organizerId) {
+      message.value = 'User not logged in'
+      return
     }
-  ]
-  </script>
+
+    const response = await axios.get(`http://localhost:3000/events/${organizerId}`)
+    events.value = response.data.events
+  } catch (error) {
+    message.value = 'Failed to load events'
+    console.error(error)
+  }
+}
+
+onMounted(fetchHostEvents)
+
+const goToEvent = (eventId) => {
+  router.push(`/host-event/${eventId}`)
+}
+
+const activeEvents = computed(() =>
+  events.value.filter(e => new Date(e.end_date) > new Date())
+)
+
+const totalEvents = computed(() => events.value.length)
+</script>
+
 
 <template>
-    <div class="min-h-screen bg-gray-50 px-4 py-8">
-      <div class="max-w-6xl mx-auto text-center mb-10">
-        <h1 class="text-3xl font-bold">
-            Welcome back, {{ authStore.user?.displayName || authStore.user?.email || 'Guest' }}!
-        </h1>
-        <p class="text-gray-500">Here is your dashboard</p>
-      </div>
-  
-      <div class="max-w-4xl mx-auto grid grid-cols-2 gap-6 mb-10">
-        <div class="bg-white rounded shadow p-6 text-center">
-          <h2 class="text-4xl font-bold text-blue-600">08</h2>
-          <p class="text-sm text-gray-600 mt-2">Active Events</p>
-        </div>
-        <div class="bg-white rounded shadow p-6 text-center">
-          <h2 class="text-4xl font-bold text-green-600">23</h2>
-          <p class="text-sm text-gray-600 mt-2">Events Attended</p>
-        </div>
-      </div>
-  
-      <div class="max-w-6xl mx-auto">
-        <h2 class="text-xl font-semibold mb-4">Events Summary</h2>
-        <p class="text-sm text-gray-500 mb-6">Lorem ipsum something anything</p>
-  
-        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-            <EventCard
-                v-for="(event, index) in events"
-                :key="index"
-                :title="event.title"
-                :price="event.price"
-                :image="event.image"
-                :attendees="event.attendees || 123"
-            />
+  <div class="max-w-screen-xl mx-auto px-4 py-8">
+    <div class="max-w-6xl mx-auto text-center mb-10">
+      <h1 class="text-3xl font-bold">
+        Welcome back, {{ authStore.user?.full_name || authStore.user?.email || 'Organizer' }}!
+      </h1>
+      <p class="text-gray-500">Here is your organizer dashboard</p>
+    </div>
 
-        </div>
+    <div class="max-w-4xl mx-auto grid grid-cols-1 sm:grid-cols-2 gap-6 mb-10">
+      <div class="bg-white rounded-lg shadow p-6 text-center border border-blue-100">
+        <h2 class="text-4xl font-bold text-blue-600">{{ activeEvents.length }}</h2>
+        <p class="text-sm text-gray-600 mt-2">Active Events</p>
+      </div>
+      <div class="bg-white rounded-lg shadow p-6 text-center border border-green-100">
+        <h2 class="text-4xl font-bold text-green-600">{{ totalEvents }}</h2>
+        <p class="text-sm text-gray-600 mt-2">Total Events Hosted</p>
       </div>
     </div>
-  </template>
-  
-  
-  <style scoped>
-  </style>
-  
+
+    <div class="max-w-6xl mx-auto">
+      <div class="flex items-center justify-between mb-6">
+        <div>
+          <h2 class="text-xl font-semibold text-gray-800">Your Events</h2>
+          <p class="text-sm text-gray-500">Manage and view your hosted events</p>
+        </div>
+        <button
+          @click="goToCreateEvent"
+          class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition"
+        >
+          + Create New Event
+        </button>
+      </div>
+
+      <div v-if="events.length > 0" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+        <EventCard
+          v-for="(event, index) in events"
+          :key="index"
+          :title="event.name"
+          :price="`$${event.general_price}`"
+          :image="event.image || eventImg"
+          :attendees="event.attendees || 0"
+          @click="() => goToEvent(event.id)"
+        />
+      </div>
+
+      <p v-else class="text-center text-gray-500 text-sm">No events created yet.</p>
+      <p v-if="message" class="text-red-500 text-center mt-4">{{ message }}</p>
+      
+    </div>
+  </div>
+</template>

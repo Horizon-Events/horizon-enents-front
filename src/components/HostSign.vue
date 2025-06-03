@@ -1,9 +1,7 @@
 <script setup>
+import axios from 'axios'
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'
-import { createUserWithEmailAndPassword } from 'firebase/auth'
-import { doc, setDoc } from 'firebase/firestore'
-import { hostAuth, hostFirestore } from '../hostfirebase'
 
 const firstName = ref('')
 const lastName = ref('')
@@ -29,18 +27,12 @@ const registerHost = async () => {
   }
 
   try {
-    console.log(hostAuth.app.name) 
-    const result = await createUserWithEmailAndPassword(hostAuth, email.value, password.value)
-    const user = result.user
 
-    await setDoc(doc(hostFirestore, 'hosts', user.uid), {
-      firstName: firstName.value,
-      lastName: lastName.value,
+    await axios.post('http://localhost:3000/users', {
       email: email.value,
-      dob: dob.value,
-      gender: gender.value,
-      role: 'host',
-      createdAt: new Date()
+      full_name: firstName.value,
+      password: password.value,
+      role: 'organizer',
     })
 
     message.value = 'Host account created!'

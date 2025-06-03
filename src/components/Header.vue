@@ -1,12 +1,27 @@
 <script setup>
-  import clouds from '../assets/clouds.png'
-  import sunset from '../assets/sunset.png'
-  import event from '../assets/logo.png'
-  import blue from '../assets/bluey.png'
+  import { ref, onMounted } from 'vue'
+import axios from 'axios'
+import clouds from '../assets/clouds.png'
+import sunset from '../assets/sunset.png'
+import event from '../assets/logo.png'
 
-  import { useAuthStore } from '@/stores/auth'
+import { useAuthStore } from '@/stores/auth'
 
-  const authStore = useAuthStore()
+const authStore = useAuthStore()
+const activeEventsCount = ref(0)
+
+const fetchActiveEvents = async () => {
+  try {
+    const res = await axios.get('http://localhost:3000/events')
+    const now = new Date()
+    activeEventsCount.value = res.data.events.filter(e => new Date(e.end_date) > now).length
+  } catch (err) {
+    console.error('Failed to fetch events:', err)
+  }
+}
+
+onMounted(fetchActiveEvents)
+
 
 </script>
 
@@ -38,7 +53,9 @@
         </div>
 
         <div class="flex flex-col gap-2">
-          <div class="bg-[#2e2e2e] text-white text-sm px-13 py-2 rounded shadow">23 Active Events</div>
+          <div class="bg-[#2e2e2e] text-white text-sm px-13 py-2 rounded shadow">
+            {{ activeEventsCount }} Available Events
+          </div>
           <router-link
             v-if="!authStore.user"
             to="/register"
